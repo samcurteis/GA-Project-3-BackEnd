@@ -1,12 +1,11 @@
 import express from 'express';
 import { connectDb } from './db/helpers.js';
+import Router from './config/router.js';
 
 const app = express();
 
-app.use((req, res) => {
-  console.log(`incoming request${req}`);
-  return res.send('you made a request to Adventure countires something');
-});
+app.use(express.json());
+app.use('/api', Router);
 
 async function startServer() {
   try {

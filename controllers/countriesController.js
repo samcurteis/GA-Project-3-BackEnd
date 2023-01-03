@@ -1,4 +1,4 @@
-import Country from '../models/country';
+import Country from '../models/country.js';
 
 const getAllCountries = async (_req, res, next) => {
   try {
