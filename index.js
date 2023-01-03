@@ -6,6 +6,7 @@ const app = express()
 
 app.use((req, res) => {
   console.log(`incoming request${req}`)
+  return res.send('you made a request to Adventure countires something')
 })
 
 async function startServer(){
