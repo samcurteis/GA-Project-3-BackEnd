@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "seed": "node db/seed.js"
+    "seed": "node db/seed.js",
+    "dev": "npx nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -20,8 +21,11 @@
   },
   "homepage": "https://github.com/CodebyJet/GA-Project-3-BackEnd#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.2",
     "path": "^0.12.7"
   }
