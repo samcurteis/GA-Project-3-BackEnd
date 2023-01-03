@@ -4,4 +4,4 @@ const countrySchema = new mongoose.Schema({
   name: { type: String, required: true }
 });
 
-export default mongoose.model('country', countrySchema);
+export default mongoose.model('Country', countrySchema);
