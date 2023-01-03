@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
     "seed": "node db/seed.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CodebyJet/GA-Project-3-BackEnd.git"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -19,7 +21,8 @@
   "homepage": "https://github.com/CodebyJet/GA-Project-3-BackEnd#readme",
   "dependencies": {
     "express": "^4.18.2",
-    "fs": "*",
+    "fs": "^0.0.1-security",
+    "mongoose": "^6.8.2",
     "path": "^0.12.7"
   }
 }
