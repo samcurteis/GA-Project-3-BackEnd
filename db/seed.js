@@ -28,7 +28,6 @@ import Country from "../models/country.js";
 //   }
 // });
 // console.log(countries);
-
 //USERS
 
 const countries = [
