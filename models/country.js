@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Entry from './entry.js';
 
 const countrySchema = new mongoose.Schema({
   name: { type: String, required: true },

@@ -14,13 +14,17 @@ Router.route('/countries/:id/entries/:entryId')
 
 
 Router.route('/countries').get(countriesController.getAllCountries);
+Router.route('/countries/search').get(countriesController.searchCountry)
 Router.route('/countries/:id').get(countriesController.getSingleCountry)
 
-Router.route('/countries/search').get(countriesController.searchCountry)
 
 Router.route('/register').post(userController.registerUser);
 
 Router.route('/login').post(userController.loginUser);
+
+Router.route('/users').get(secureRoute, userController.getAllUsers)
+Router.route('/users/search').get(secureRoute, userController.searchUser);
+Router.route('/users/:id').get(secureRoute, userController.getSingleUser);
 
 
 export default Router;

@@ -1,5 +1,5 @@
 import { connectDb, disconnectDb } from "./helpers.js";
-
+import User from "../models/user.js";
 //models
 import Country from "../models/country.js";
 
@@ -278,28 +278,34 @@ const countries = [
 ];
 
 const SAM = {
-  userName: "firemansam",
+  username: "firemansam",
   password: "Password!1",
   email: "sam@sam.com",
-  isAdmin: false,
+  isAdmin: true,
 };
 const NATHAN = {
-  userName: "natedawg",
+  username: "natedawg",
   password: "Password!1",
   email: "nathan@nathan.com",
-  isAdmin: false,
+  isAdmin: true,
 };
-const TOBY = {
-  userName: "tobytoby",
+const JET = {
+  username: "Jet",
   password: "Password!1",
-  email: "toby@toby.com",
+  email: "jet@jet.com",
   isAdmin: true,
 };
 const ADMIN_USER = {
-  userName: "admin",
+  username: "admin",
   password: "Password!1",
   email: "admin@admin.com",
   isAdmin: true,
+};
+
+const NON_ADMIN_USER = {
+  username: 'nonadmin',
+  password: 'Password!1',
+  email: 'nonadmin@nonadmin.com'
 };
 
 //DROP DB
@@ -316,21 +322,20 @@ async function db() {
   // await Entry.deleteMany({});
   // console.log("deleted entries");
 
-  // console.log("deleting users");
-  // await User.deleteMany();
-  // console.log("successfully deleted users");
+  console.log("deleting users");
+  await User.deleteMany();
+  console.log("successfully deleted users");
 
   // creating users
-  // console.log("creating user");
-  // const [user, adminUser] = await User.create([NON_ADMIN_USER, ADMIN_USER]);
+  console.log("creating user");
+  const [user, adminUser] = await User.create([NON_ADMIN_USER, ADMIN_USER]);
   //TODO: only when schema done
-  // const [sam, nathan, toby, admin] = await User.create([
-  //   SAM,
-  //   NATHAN,
-  //   TOBY,
-  //   ADMIN_USER,
-  // ]);
-  // console.log("created users");
+  const [sam, nathan, jet] = await User.create([
+    SAM,
+    NATHAN,
+    JET
+  ]);
+  console.log("created users");
 
   countries.forEach((country) => {
     console.log("creating", country);

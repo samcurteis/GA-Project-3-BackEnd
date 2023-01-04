@@ -27,11 +27,7 @@ async function searchCountry(req, res, next) {
   try {
     const { search } = req.query;
     const country = await Country.find({
-      $or: [
-        { name: { $regex: search, $options: 'i' } },
-        { continent: { $regex: search, $options: 'i' } },
-        { code: { $regex: search, $options: 'i' } }
-      ]
+        name: { $regex: search, $options: 'i' } 
     });
     return res.status(200).json(country);
   } catch (error) {
