@@ -43,4 +43,58 @@ async function loginUser(req, res, next) {
   }
 }
 
-export default { registerUser, loginUser };
+const getAllUsers = async (_req, res, next) => {
+  try {
+    const users = await User.find();
+    return res.status(200).json(users);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getSingleUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).populate('entries');
+    return user
+      ? res.status(200).json(user)
+      : res.status(404).json({ message: `No user with id ${req.params.id}` });
+  } catch (e) {
+    next(e);
+  }
+};
+
+async function searchUser(req, res, next) {
+  try {
+    const { search } = req.query;
+    const user = await User.find({
+      username: { $regex: search, $options: 'i' }
+    });
+    return res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const deleteSingleUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (req.currentUser.isAdmin) {
+      await User.findByIdAndDelete(req.params.id);
+      return res.status(200).json({ message: 'Successfully deleted user' });
+    }
+
+    return res.status(301).json({ message: 'Unauthorized' });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export default {
+  registerUser,
+  loginUser,
+  getAllUsers,
+  getSingleUser,
+  searchUser,
+  deleteSingleUser
+};

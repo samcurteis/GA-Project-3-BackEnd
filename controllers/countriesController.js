@@ -22,4 +22,16 @@ const getSingleCountry = async (req, res, next) => {
   }
 };
 
-export default { getAllCountries, getSingleCountry };
+async function searchCountry(req, res, next) {
+  try {
+    const { search } = req.query;
+    const country = await Country.find({
+      name: { $regex: search, $options: 'i' }
+    });
+    return res.status(200).json(country);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { getAllCountries, getSingleCountry, searchCountry };
