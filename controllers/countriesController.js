@@ -2,7 +2,7 @@ import Country from '../models/country.js';
 
 const getAllCountries = async (_req, res, next) => {
   try {
-    const country = await Country.find();
+    const country = await Country.find().populate('entries');
     return res.status(200).json(country);
   } catch (e) {
     next(e);
@@ -11,7 +11,7 @@ const getAllCountries = async (_req, res, next) => {
 
 const getSingleCountry = async (req, res, next) => {
   try {
-    const country = await Country.findById(req.params.id);
+    const country = await Country.findById(req.params.id).populate('entries');
     return country
       ? res.status(200).json(country)
       : res
@@ -22,12 +22,11 @@ const getSingleCountry = async (req, res, next) => {
   }
 };
 
-
 async function searchCountry(req, res, next) {
   try {
     const { search } = req.query;
     const country = await Country.find({
-        name: { $regex: search, $options: 'i' } 
+      name: { $regex: search, $options: 'i' }
     });
     return res.status(200).json(country);
   } catch (error) {
@@ -35,4 +34,4 @@ async function searchCountry(req, res, next) {
   }
 }
 
-export default {getAllCountries, getSingleCountry, searchCountry}
+export default { getAllCountries, getSingleCountry, searchCountry };

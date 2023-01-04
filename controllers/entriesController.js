@@ -1,11 +1,27 @@
+// import Entry from '../models/entry.js';
 import Entry from '../models/entry.js';
 import Country from '../models/country.js';
+
+async function getAllEntries(_req, res, next) {
+  try {
+    const entries = await Entry.find();
+    return res.status(200).json(entries);
+  } catch (e) {
+    next(e);
+  }
+}
 
 async function createEntry(req, res, next) {
   try {
     const entry = await Entry.create({
-      ...req.body
+      ...req.body,
+      addedBy: req.currentUser._id
     });
+
+    await Country.findOneAndUpdate(
+      { _id: entry.country },
+      { $push: { entries: entry._id } }
+    );
 
     return res.status(201).json(entry);
   } catch (e) {
@@ -15,31 +31,27 @@ async function createEntry(req, res, next) {
 
 async function deleteEntry(req, res, next) {
   try {
-    country = await Country.findById(req.params.id);
-
-    if (!country) {
-      return res.status(404).send({ message: 'No country found' });
-    }
-
-    const entry = country.entries.id(req.params.entryId);
+    const entry = await Entry.findById(req.params.id);
 
     if (!entry) {
       return res.status(404).send({ message: 'No entry found' });
     }
+    console.log(req.currentUser);
+    if (
+      !entry.addedBy.equals(req.currentUser._id)
+      // || !req.currentUser.isAdmin - add back after updating seed file
+    ) {
+      return res.status(401).send({ message: 'Unauthorized' });
+    }
 
-    // **** COMMENT BACK IN WHEN USER/ ADMIN IS SET UP ****
-    // if (
-    //   !entry.entryBy.equals(req.currentUser._id) ||
-    //   !req.currentUser.isAdmin
-    // ) {
-    //   return res.status(401).send({ message: 'Unauthorized'})
-    // }
+    await Country.findOneAndUpdate(
+      { _id: entry.country },
+      { $unset: { entries: req.params.id } }
+    );
 
-    entry.remove();
+    await Entry.findByIdAndDelete(req.params.id);
 
-    const savedCountry = await country.save();
-
-    return res.status(200).json(savedCountry);
+    return res.status(200).json({ message: 'Successfully deleted entry' });
   } catch (error) {
     next(error);
   }
@@ -47,32 +59,17 @@ async function deleteEntry(req, res, next) {
 
 async function updateEntry(req, res, next) {
   try {
-    const country = await Country.findById(req.params.id);
-
-    if (!country) {
-      return res.status(404).send({ message: 'No country found' });
+    const entry = await Entry.findById(req.params.id);
+    if (entry.addedBy.equals(req.currentUser._id) || req.currentUser.isAdmin) {
+      entry.set(req.body);
+      const updatedEntry = await entry.save();
+      return res.status(200).json(updatedEntry);
     }
 
-    const entry = country.entries.id(req.params.entryId);
-
-    if (!entry) {
-      return res.status(404).send({ message: 'No entry found' });
-    }
-
-    // **** COMMENT BACK IN WHEN USER/ ADMIN IS SET UP ****
-    // if (
-    //   !entry.entryBy.equals(req.currentUser._id)
-    // ) {
-    //   return res.status(401).send({ message: 'Unauthorized'})
-    // }
-
-    entry.set(req.body);
-    const savedCountry = await country.save();
-
-    return res.status(200).json(savedCountry);
+    return res.status(301).json({ message: 'Unauthorized' });
   } catch (error) {
     next(error);
   }
 }
 
-export default { createEntry, deleteEntry, updateEntry };
+export default { getAllEntries, createEntry, deleteEntry, updateEntry };
