@@ -24,11 +24,10 @@ Router.route('/register').post(userController.registerUser);
 
 Router.route('/login').post(userController.loginUser);
 
-Router.route('/users').get(secureRoute, userController.getAllUsers);
-Router.route('/users/search').get(secureRoute, userController.searchUser);
-Router.route('/users/:id').get(secureRoute, userController.getSingleUser);
+Router.route('/users').post(secureRoute, userController.getAllUsers);
+Router.route('/users/search').post(secureRoute, userController.searchUser);
+Router.route('/users/:id').post(secureRoute, userController.getSingleUser);
 
-Router.route('/register').post(userController.registerUser);
 
 Router.route('/login').post(userController.loginUser);
 
