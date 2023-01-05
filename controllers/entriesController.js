@@ -36,7 +36,6 @@ async function deleteEntry(req, res, next) {
     if (!entry) {
       return res.status(404).send({ message: 'No entry found' });
     }
-    console.log(req.currentUser);
     if (
       !entry.addedBy.equals(req.currentUser._id)
       // || !req.currentUser.isAdmin - add back after updating seed file
@@ -60,6 +59,11 @@ async function deleteEntry(req, res, next) {
 async function updateEntry(req, res, next) {
   try {
     const entry = await Entry.findById(req.params.id);
+
+    if (!entry) {
+      return res.status(404).send({ message: 'No entry found' });
+    }
+
     if (entry.addedBy.equals(req.currentUser._id) || req.currentUser.isAdmin) {
       entry.set(req.body);
       const updatedEntry = await entry.save();
