@@ -9,6 +9,7 @@ const Router = express.Router();
 Router.route('/countries/:id').get(countriesController.getSingleCountry);
 
 Router.route('/entries/:id')
+  .get(entriesController.getSingleEntry)
   .delete(secureRoute, entriesController.deleteEntry)
   .put(secureRoute, entriesController.updateEntry);
 
@@ -27,7 +28,6 @@ Router.route('/login').post(userController.loginUser);
 Router.route('/users').post(secureRoute, userController.getAllUsers);
 Router.route('/users/search').post(secureRoute, userController.searchUser);
 Router.route('/users/:id').post(secureRoute, userController.getSingleUser);
-
 
 Router.route('/login').post(userController.loginUser);
 
