@@ -19,12 +19,12 @@ async function createEntry(req, res, next) {
       addedBy: req.currentUser._id
     });
 
-    await Country.findOneAndUpdate(
+    await Country.updateOne(
       { _id: entry.country },
       { $push: { entries: entry._id } }
     );
 
-    await User.findOneAndUpdate(
+    await User.updateOne(
       { _id: entry.addedBy },
       { $push: { entries: entry._id } }
     );

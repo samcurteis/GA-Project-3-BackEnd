@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     validate: (pw) =>
       /(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(pw)
   },
-  entries: { type: mongoose.Types.ObjectId, ref: 'Entry' },
+  entries: [{ type: mongoose.Types.ObjectId, ref: 'Entry' }],
   cloudinaryImageId: { type: String }
 });
 
