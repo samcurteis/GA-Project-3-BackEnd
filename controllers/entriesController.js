@@ -1,6 +1,7 @@
 // import Entry from '../models/entry.js';
 import Entry from '../models/entry.js';
 import Country from '../models/country.js';
+import User from '../models/user.js';
 
 async function getAllEntries(_req, res, next) {
   try {
@@ -18,8 +19,13 @@ async function createEntry(req, res, next) {
       addedBy: req.currentUser._id
     });
 
-    await Country.findOneAndUpdate(
+    await Country.updateOne(
       { _id: entry.country },
+      { $push: { entries: entry._id } }
+    );
+
+    await User.updateOne(
+      { _id: entry.addedBy },
       { $push: { entries: entry._id } }
     );
 
@@ -45,6 +51,11 @@ async function deleteEntry(req, res, next) {
 
     await Country.findOneAndUpdate(
       { _id: entry.country },
+      { $unset: { entries: req.params.id } }
+    );
+
+    await User.findOneAndUpdate(
+      { _id: entry.addedBy },
       { $unset: { entries: req.params.id } }
     );
 

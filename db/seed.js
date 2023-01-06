@@ -33,7 +33,7 @@ import Entry from '../models/entry.js';
 
 const countries = [
   { name: 'Afghanistan', code: 'AF' },
-  { name: 'land Islands', code: 'AX' },
+  { name: 'Åland Islands', code: 'AX' },
   { name: 'Albania', code: 'AL' },
   { name: 'Algeria', code: 'DZ' },
   { name: 'American Samoa', code: 'AS' },
@@ -387,12 +387,57 @@ async function db() {
       addedBy: adminUser._id
     }
   ];
+  console.log('Creating test entry one');
+  const testEntryOne = await Entry.create(testEntries[0]);
+  await Country.findOneAndUpdate(
+    { _id: testCountryOne._id },
+    { $push: { entries: testEntryOne._id } }
+  );
 
-  testEntries.forEach((entry) => {
-    console.log('Creating test entry');
-    Entry.create(entry);
-    console.log('Successfully created entry');
-  });
+  await User.findOneAndUpdate(
+    { _id: testEntryOne.addedBy },
+    { $push: { entries: testEntryOne._id } }
+  );
+  console.log('Successfully created one');
+
+  console.log('Creating test entrThreewo');
+  const testEntryTwo = await Entry.create(testEntries[1]);
+  await Country.findOneAndUpdate(
+    { _id: testCountryTwo._id },
+    { $push: { entries: testEntryTwo._id } }
+  );
+
+  await User.findOneAndUpdate(
+    { _id: testEntryTwo.addedBy },
+    { $push: { entries: testEntryTwo._id } }
+  );
+  console.log('Successfully created two');
+
+  console.log('Creating test entry three');
+  const testEntryThree = await Entry.create(testEntries[2]);
+  await Country.findOneAndUpdate(
+    { _id: testCountryThree._id },
+    { $push: { entries: testEntryThree._id } }
+  );
+
+  await User.findOneAndUpdate(
+    { _id: testEntryThree.addedBy },
+    { $push: { entries: testEntryThree._id } }
+  );
+  console.log('Successfully created three');
+
+  console.log('Creating test entry four');
+  const testEntryFour = await Entry.create(testEntries[3]);
+  await Country.findOneAndUpdate(
+    { _id: testCountryFour._id },
+    { $push: { entries: testEntryFour._id } }
+  );
+
+  await User.findOneAndUpdate(
+    { _id: testEntryFour.addedBy },
+    { $push: { entries: testEntryFour._id } }
+  );
+  console.log('Successfully created four');
 
   await disconnectDb();
   console.log('successfully disconnected from mongodb');
