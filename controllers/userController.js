@@ -54,7 +54,12 @@ const getAllUsers = async (_req, res, next) => {
 
 const getSingleUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id).populate('entries');
+    const user = await User.findById(req.params.id).populate({
+      path: 'entries',
+      populate: {
+        path: 'country'
+      }
+    });
     return user
       ? res.status(200).json(user)
       : res.status(404).json({ message: `No user with id ${req.params.id}` });

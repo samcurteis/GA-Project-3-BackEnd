@@ -11,7 +11,12 @@ const getAllCountries = async (_req, res, next) => {
 
 const getSingleCountry = async (req, res, next) => {
   try {
-    const country = await Country.findById(req.params.id).populate('entries');
+    const country = await Country.findById(req.params.id).populate({
+      path: 'entries',
+      populate: {
+        path: 'addedBy'
+      }
+    });
     return country
       ? res.status(200).json(country)
       : res
