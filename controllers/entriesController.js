@@ -29,7 +29,8 @@ async function createEntry(req, res, next) {
   try {
     const entry = await Entry.create({
       ...req.body,
-      addedBy: req.currentUser._id
+      addedBy: req.currentUser._id,
+      username: req.currentUser.username
     });
 
     await Country.updateOne(
