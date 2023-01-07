@@ -5,8 +5,21 @@ import User from '../models/user.js';
 
 async function getAllEntries(_req, res, next) {
   try {
-    const entries = await Entry.find();
+    const entries = await Entry.find().populate('country').populate('addedBy');
     return res.status(200).json(entries);
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function getSingleEntry(_req, res, next) {
+  try {
+    const entry = await Entry.findById(req.params.id)
+      .populate('country')
+      .populate('addedBy');
+    return entry
+      ? res.status(200).json(entry)
+      : res.status(404).json({ message: `No entry with id ${req.params.id}` });
   } catch (e) {
     next(e);
   }
@@ -88,4 +101,4 @@ async function updateEntry(req, res, next) {
   }
 }
 
-export default { getAllEntries, createEntry, deleteEntry, updateEntry };
+export default { getAllEntries, getSingleEntry, createEntry, deleteEntry, updateEntry };
