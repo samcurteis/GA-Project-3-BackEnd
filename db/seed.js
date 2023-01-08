@@ -1,393 +1,415 @@
-import { connectDb, disconnectDb } from './helpers.js';
-import User from '../models/user.js';
-//models
-import Country from '../models/country.js';
-import Entry from '../models/entry.js';
-
-//CSV ingest
-// import fs from "fs";
-// import path from "path";
-// import { fileURLToPath } from "url";
-// const FILEPATH = `/countries.csv`;
-// console.log(FILEPATH);
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
-// const file = fs.readFileSync(__dirname + FILEPATH, "utf8");
-// const lines = file.toString().split(/\r?\n/);
-
-// let countries = [];
-// for (let i = 0; i < lines.length; i++) {
-//   const lineData = lines[i].split(",");
-//   countries.push(lineData[0]);
-// }
-
-// countries = countries.map((country) => {
-//   {
-//     name: country;
-//   }
-// });
-// console.log(countries);
-//USERS
+import { connectDb, disconnectDb } from "./helpers.js";
+import User from "../models/user.js";
+import Country from "../models/country.js";
+import Entry from "../models/entry.js";
 
 const countries = [
-  { name: 'Afghanistan', code: 'AF' },
-  { name: 'Åland Islands', code: 'AX' },
-  { name: 'Albania', code: 'AL' },
-  { name: 'Algeria', code: 'DZ' },
-  { name: 'American Samoa', code: 'AS' },
-  { name: 'Andorra', code: 'AD' },
-  { name: 'Angola', code: 'AO' },
-  { name: 'Anguilla', code: 'AI' },
-  { name: 'Antarctica', code: 'AQ' },
-  { name: 'Antigua and Barbuda', code: 'AG' },
-  { name: 'Argentina', code: 'AR' },
-  { name: 'Armenia', code: 'AM' },
-  { name: 'Aruba', code: 'AW' },
-  { name: 'Australia', code: 'AU' },
-  { name: 'Austria', code: 'AT' },
-  { name: 'Azerbaijan', code: 'AZ' },
-  { name: 'Bahamas', code: 'BS' },
-  { name: 'Bahrain', code: 'BH' },
-  { name: 'Bangladesh', code: 'BD' },
-  { name: 'Barbados', code: 'BB' },
-  { name: 'Belarus', code: 'BY' },
-  { name: 'Belgium', code: 'BE' },
-  { name: 'Belize', code: 'BZ' },
-  { name: 'Benin', code: 'BJ' },
-  { name: 'Bermuda', code: 'BM' },
-  { name: 'Bhutan', code: 'BT' },
-  { name: 'Bolivia', code: 'BO' },
-  { name: 'Bosnia and Herzegovina', code: 'BA' },
-  { name: 'Botswana', code: 'BW' },
-  { name: 'Bouvet Island', code: 'BV' },
-  { name: 'Brazil', code: 'BR' },
-  { name: 'British Indian Ocean Territory', code: 'IO' },
-  { name: 'Brunei Darussalam', code: 'BN' },
-  { name: 'Bulgaria', code: 'BG' },
-  { name: 'Burkina Faso', code: 'BF' },
-  { name: 'Burundi', code: 'BI' },
-  { name: 'Cambodia', code: 'KH' },
-  { name: 'Cameroon', code: 'CM' },
-  { name: 'Canada', code: 'CA' },
-  { name: 'Cape Verde', code: 'CV' },
-  { name: 'Cayman Islands', code: 'KY' },
-  { name: 'Central African Republic', code: 'CF' },
-  { name: 'Chad', code: 'TD' },
-  { name: 'Chile', code: 'CL' },
-  { name: 'China', code: 'CN' },
-  { name: 'Christmas Island', code: 'CX' },
-  { name: 'Cocos (Keeling) Islands', code: 'CC' },
-  { name: 'Colombia', code: 'CO' },
-  { name: 'Comoros', code: 'KM' },
-  { name: 'Congo', code: 'CG' },
-  { name: 'Congo, The Democratic Republic of the', code: 'CD' },
-  { name: 'Cook Islands', code: 'CK' },
-  { name: 'Costa Rica', code: 'CR' },
-  { name: "Cote D'Ivoire", code: 'CI' },
-  { name: 'Croatia', code: 'HR' },
-  { name: 'Cuba', code: 'CU' },
-  { name: 'Cyprus', code: 'CY' },
-  { name: 'Czech Republic', code: 'CZ' },
-  { name: 'Denmark', code: 'DK' },
-  { name: 'Djibouti', code: 'DJ' },
-  { name: 'Dominica', code: 'DM' },
-  { name: 'Dominican Republic', code: 'DO' },
-  { name: 'Ecuador', code: 'EC' },
-  { name: 'Egypt', code: 'EG' },
-  { name: 'El Salvador', code: 'SV' },
-  { name: 'Equatorial Guinea', code: 'GQ' },
-  { name: 'Eritrea', code: 'ER' },
-  { name: 'Estonia', code: 'EE' },
-  { name: 'Ethiopia', code: 'ET' },
-  { name: 'Falkland Islands (Malvinas)', code: 'FK' },
-  { name: 'Faroe Islands', code: 'FO' },
-  { name: 'Fiji', code: 'FJ' },
-  { name: 'Finland', code: 'FI' },
-  { name: 'France', code: 'FR' },
-  { name: 'French Guiana', code: 'GF' },
-  { name: 'French Polynesia', code: 'PF' },
-  { name: 'French Southern Territories', code: 'TF' },
-  { name: 'Gabon', code: 'GA' },
-  { name: 'Gambia', code: 'GM' },
-  { name: 'Georgia', code: 'GE' },
-  { name: 'Germany', code: 'DE' },
-  { name: 'Ghana', code: 'GH' },
-  { name: 'Gibraltar', code: 'GI' },
-  { name: 'Greece', code: 'GR' },
-  { name: 'Greenland', code: 'GL' },
-  { name: 'Grenada', code: 'GD' },
-  { name: 'Guadeloupe', code: 'GP' },
-  { name: 'Guam', code: 'GU' },
-  { name: 'Guatemala', code: 'GT' },
-  { name: 'Guernsey', code: 'GG' },
-  { name: 'Guinea', code: 'GN' },
-  { name: 'Guinea-Bissau', code: 'GW' },
-  { name: 'Guyana', code: 'GY' },
-  { name: 'Haiti', code: 'HT' },
-  { name: 'Heard Island and Mcdonald Islands', code: 'HM' },
-  { name: 'Holy See (Vatican City State)', code: 'VA' },
-  { name: 'Honduras', code: 'HN' },
-  { name: 'Hong Kong', code: 'HK' },
-  { name: 'Hungary', code: 'HU' },
-  { name: 'Iceland', code: 'IS' },
-  { name: 'India', code: 'IN' },
-  { name: 'Indonesia', code: 'ID' },
-  { name: 'Iran, Islamic Republic Of', code: 'IR' },
-  { name: 'Iraq', code: 'IQ' },
-  { name: 'Ireland', code: 'IE' },
-  { name: 'Isle of Man', code: 'IM' },
-  { name: 'Israel', code: 'IL' },
-  { name: 'Italy', code: 'IT' },
-  { name: 'Jamaica', code: 'JM' },
-  { name: 'Japan', code: 'JP' },
-  { name: 'Jersey', code: 'JE' },
-  { name: 'Jordan', code: 'JO' },
-  { name: 'Kazakhstan', code: 'KZ' },
-  { name: 'Kenya', code: 'KE' },
-  { name: 'Kiribati', code: 'KI' },
-  { name: "Korea, Democratic People's Republic of", code: 'KP' },
-  { name: 'Korea, Republic of', code: 'KR' },
-  { name: 'Kuwait', code: 'KW' },
-  { name: 'Kyrgyzstan', code: 'KG' },
-  { name: "Lao People's Democratic Republic", code: 'LA' },
-  { name: 'Latvia', code: 'LV' },
-  { name: 'Lebanon', code: 'LB' },
-  { name: 'Lesotho', code: 'LS' },
-  { name: 'Liberia', code: 'LR' },
-  { name: 'Libyan Arab Jamahiriya', code: 'LY' },
-  { name: 'Liechtenstein', code: 'LI' },
-  { name: 'Lithuania', code: 'LT' },
-  { name: 'Luxembourg', code: 'LU' },
-  { name: 'Macao', code: 'MO' },
-  { name: 'Macedonia, The Former Yugoslav Republic of', code: 'MK' },
-  { name: 'Madagascar', code: 'MG' },
-  { name: 'Malawi', code: 'MW' },
-  { name: 'Malaysia', code: 'MY' },
-  { name: 'Maldives', code: 'MV' },
-  { name: 'Mali', code: 'ML' },
-  { name: 'Malta', code: 'MT' },
-  { name: 'Marshall Islands', code: 'MH' },
-  { name: 'Martinique', code: 'MQ' },
-  { name: 'Mauritania', code: 'MR' },
-  { name: 'Mauritius', code: 'MU' },
-  { name: 'Mayotte', code: 'YT' },
-  { name: 'Mexico', code: 'MX' },
-  { name: 'Micronesia, Federated States of', code: 'FM' },
-  { name: 'Moldova, Republic of', code: 'MD' },
-  { name: 'Monaco', code: 'MC' },
-  { name: 'Mongolia', code: 'MN' },
-  { name: 'Montenegro', code: 'ME' },
-  { name: 'Montserrat', code: 'MS' },
-  { name: 'Morocco', code: 'MA' },
-  { name: 'Mozambique', code: 'MZ' },
-  { name: 'Myanmar', code: 'MM' },
-  { name: 'Namibia', code: 'NA' },
-  { name: 'Nauru', code: 'NR' },
-  { name: 'Nepal', code: 'NP' },
-  { name: 'Netherlands', code: 'NL' },
-  { name: 'Netherlands Antilles', code: 'AN' },
-  { name: 'New Caledonia', code: 'NC' },
-  { name: 'New Zealand', code: 'NZ' },
-  { name: 'Nicaragua', code: 'NI' },
-  { name: 'Niger', code: 'NE' },
-  { name: 'Nigeria', code: 'NG' },
-  { name: 'Niue', code: 'NU' },
-  { name: 'Norfolk Island', code: 'NF' },
-  { name: 'Northern Mariana Islands', code: 'MP' },
-  { name: 'Norway', code: 'NO' },
-  { name: 'Oman', code: 'OM' },
-  { name: 'Pakistan', code: 'PK' },
-  { name: 'Palau', code: 'PW' },
-  { name: 'Palestinian Territory, Occupied', code: 'PS' },
-  { name: 'Panama', code: 'PA' },
-  { name: 'Papua New Guinea', code: 'PG' },
-  { name: 'Paraguay', code: 'PY' },
-  { name: 'Peru', code: 'PE' },
-  { name: 'Philippines', code: 'PH' },
-  { name: 'Pitcairn', code: 'PN' },
-  { name: 'Poland', code: 'PL' },
-  { name: 'Portugal', code: 'PT' },
-  { name: 'Puerto Rico', code: 'PR' },
-  { name: 'Qatar', code: 'QA' },
-  { name: 'Reunion', code: 'RE' },
-  { name: 'Romania', code: 'RO' },
-  { name: 'Russian Federation', code: 'RU' },
-  { name: 'Rwanda', code: 'RW' },
-  { name: 'Saint Helena', code: 'SH' },
-  { name: 'Saint Kitts and Nevis', code: 'KN' },
-  { name: 'Saint Lucia', code: 'LC' },
-  { name: 'Saint Pierre and Miquelon', code: 'PM' },
-  { name: 'Saint Vincent and the Grenadines', code: 'VC' },
-  { name: 'Samoa', code: 'WS' },
-  { name: 'San Marino', code: 'SM' },
-  { name: 'Sao Tome and Principe', code: 'ST' },
-  { name: 'Saudi Arabia', code: 'SA' },
-  { name: 'Senegal', code: 'SN' },
-  { name: 'Serbia', code: 'RS' },
-  { name: 'Seychelles', code: 'SC' },
-  { name: 'Sierra Leone', code: 'SL' },
-  { name: 'Singapore', code: 'SG' },
-  { name: 'Slovakia', code: 'SK' },
-  { name: 'Slovenia', code: 'SI' },
-  { name: 'Solomon Islands', code: 'SB' },
-  { name: 'Somalia', code: 'SO' },
-  { name: 'South Africa', code: 'ZA' },
-  { name: 'South Georgia and the South Sandwich Islands', code: 'GS' },
-  { name: 'Spain', code: 'ES' },
-  { name: 'Sri Lanka', code: 'LK' },
-  { name: 'Sudan', code: 'SD' },
-  { name: 'Suriname', code: 'SR' },
-  { name: 'Svalbard and Jan Mayen', code: 'SJ' },
-  { name: 'Swaziland', code: 'SZ' },
-  { name: 'Sweden', code: 'SE' },
-  { name: 'Switzerland', code: 'CH' },
-  { name: 'Syrian Arab Republic', code: 'SY' },
-  { name: 'Taiwan, Province of China', code: 'TW' },
-  { name: 'Tajikistan', code: 'TJ' },
-  { name: 'Tanzania, United Republic of', code: 'TZ' },
-  { name: 'Thailand', code: 'TH' },
-  { name: 'Timor-Leste', code: 'TL' },
-  { name: 'Togo', code: 'TG' },
-  { name: 'Tokelau', code: 'TK' },
-  { name: 'Tonga', code: 'TO' },
-  { name: 'Trinidad and Tobago', code: 'TT' },
-  { name: 'Tunisia', code: 'TN' },
-  { name: 'Turkey', code: 'TR' },
-  { name: 'Turkmenistan', code: 'TM' },
-  { name: 'Turks and Caicos Islands', code: 'TC' },
-  { name: 'Tuvalu', code: 'TV' },
-  { name: 'Uganda', code: 'UG' },
-  { name: 'Ukraine', code: 'UA' },
-  { name: 'United Arab Emirates', code: 'AE' },
-  { name: 'United Kingdom', code: 'GB' },
-  { name: 'United States', code: 'US' },
-  { name: 'United States Minor Outlying Islands', code: 'UM' },
-  { name: 'Uruguay', code: 'UY' },
-  { name: 'Uzbekistan', code: 'UZ' },
-  { name: 'Vanuatu', code: 'VU' },
-  { name: 'Venezuela', code: 'VE' },
-  { name: 'Viet Nam', code: 'VN' },
-  { name: 'Virgin Islands, British', code: 'VG' },
-  { name: 'Virgin Islands, U.S.', code: 'VI' },
-  { name: 'Wallis and Futuna', code: 'WF' },
-  { name: 'Western Sahara', code: 'EH' },
-  { name: 'Yemen', code: 'YE' },
-  { name: 'Zambia', code: 'ZM' },
-  { name: 'Zimbabwe', code: 'ZW' }
+  { name: "Angola", code: "AO" },
+  { name: "Burundi", code: "BI" },
+  { name: "Benin", code: "BJ" },
+  { name: "Burkina Faso", code: "BF" },
+  { name: "French Southern and Antarctic Lands", code: "XX" },
+  { name: "Botswana", code: "BW" },
+  { name: "Central African Republic", code: "CF" },
+  { name: "Ivory Coast", code: "CI" },
+  { name: "Cameroon", code: "CM" },
+  { name: "Democratic Republic of the Congo", code: "CD" },
+  { name: "Republic of Congo", code: "CG" },
+  { name: "Comoros", code: "KM" },
+  { name: "Cape Verde", code: "CV" },
+  { name: "Djibouti", code: "DJ" },
+  { name: "Algeria", code: "DZ" },
+  { name: "Egypt", code: "EG" },
+  { name: "Eritrea", code: "ER" },
+  { name: "Spain", code: "ES" },
+  { name: "Ethiopia", code: "ET" },
+  { name: "Gabon", code: "GA" },
+  { name: "Ghana", code: "GH" },
+  { name: "Guinea", code: "GN" },
+  { name: "Gambia", code: "GM" },
+  { name: "Equatorial Guinea", code: "GQ" },
+  { name: "Guinea Bissau", code: "GW" },
+  { name: "Kenya", code: "KE" },
+  { name: "Liberia", code: "LR" },
+  { name: "Libya", code: "LY" },
+  { name: "Lesotho", code: "LS" },
+  { name: "Morocco", code: "MA" },
+  { name: "Madagascar", code: "MG" },
+  { name: "Mali", code: "ML" },
+  { name: "Mozambique", code: "MZ" },
+  { name: "Mauritania", code: "MR" },
+  { name: "Malawi", code: "MW" },
+  { name: "Mayotte", code: "YT" },
+  { name: "Namibia", code: "NA" },
+  { name: "Niger", code: "NE" },
+  { name: "Nigeria", code: "NG" },
+  { name: "Madeira", code: "PT" },
+  { name: "Rwanda", code: "RW" },
+  { name: "Western Sahara", code: "EH" },
+  { name: "Sudan", code: "SD" },
+  { name: "South Sudan", code: "SS" },
+  { name: "Senegal", code: "SN" },
+  { name: "Sierra Leone", code: "SL" },
+  { name: "Somaliland", code: "XX" },
+  { name: "Puntland", code: "XX" },
+  { name: "Somalia", code: "SO" },
+  { name: "Sao Tome and Principe", code: "XX" },
+  { name: "Swaziland", code: "SZ" },
+  { name: "Chad", code: "TD" },
+  { name: "Togo", code: "TG" },
+  { name: "Tunisia", code: "TN" },
+  { name: "Tanzania", code: "TZ" },
+  { name: "Zanzibar", code: "XX" },
+  { name: "Uganda", code: "AE" },
+  { name: "South Africa", code: "ZA" },
+  { name: "Zambia", code: "ZM" },
+  { name: "Zimbabwe", code: "ZW" },
+  { name: "Afghanistan", code: "AF" },
+  { name: "United Arab Emirates", code: "AE" },
+  { name: "Armenia", code: "AM" },
+  { name: "Azerbaijan", code: "AZ" },
+  { name: "Bangladesh", code: "BD" },
+  { name: "Bahrain", code: "BH" },
+  { name: "Brunei", code: "BN" },
+  { name: "Bhutan", code: "BT" },
+  { name: "Cocos (Keeling) Islands", code: "XX" },
+  { name: "China", code: "CN" },
+  { name: "Cyprus No Mans Area", code: "XX" },
+  { name: "Christmas Island", code: "CX" },
+  { name: "Northern Cyprus", code: "TR" },
+  { name: "Cyprus", code: "CY" },
+  { name: "Dhekelia Sovereign Base Area", code: "XX" },
+  { name: "Gaza", code: "XX" },
+  { name: "Ajaria", code: "XX" },
+  { name: "Georgia", code: "GE" },
+  { name: "Hong Kong S.A.R.", code: "HK" },
+  { name: "Indonesia", code: "ID" },
+  { name: "India", code: "IN" },
+  { name: "Iraqi Kurdistan", code: "IQ" },
+  { name: "Iran", code: "IR" },
+  { name: "Iraq", code: "IQ" },
+  { name: "Israel", code: "IL" },
+  { name: "Jordan", code: "JO" },
+  { name: "Japan", code: "JP" },
+  { name: "Baykonur Cosmodrome", code: "XX" },
+  { name: "Siachen Glacier", code: "XX" },
+  { name: "Kazakhstan", code: "KZ" },
+  { name: "Kyrgyzstan", code: "KG" },
+  { name: "Cambodia", code: "KH" },
+  { name: "Korean Demilitarized Zone (south)", code: "XX" },
+  { name: "Korean Demilitarized Zone (north)", code: "XX" },
+  { name: "South Korea", code: "KR" },
+  { name: "Kuwait", code: "KW" },
+  { name: "Laos", code: "LA" },
+  { name: "Lebanon", code: "LB" },
+  { name: "Sri Lanka", code: "LK" },
+  { name: "Macao S.A.R", code: "MO" },
+  { name: "Myanmar", code: "MM" },
+  { name: "Mongolia", code: "MN" },
+  { name: "Malaysia", code: "MY" },
+  { name: "Nepal", code: "NP" },
+  { name: "Oman", code: "OM" },
+  { name: "Pakistan", code: "Pakistan" },
+  { name: "Paracel Islands", code: "XX" },
+  { name: "Spratly Islands", code: "XX" },
+  { name: "Philippines", code: "PH" },
+  { name: "North Korea", code: "KP" },
+  { name: "Qatar", code: "QA" },
+  { name: "Russia", code: "RU" },
+  { name: "Saudi Arabia", code: "SA" },
+  { name: "Scarborough Reef", code: "XX" },
+  { name: "Singapore", code: "SG" },
+  { name: "UNDOF", code: "XX" },
+  { name: "Syria", code: "SY" },
+  { name: "Thailand", code: "TH" },
+  { name: "Tajikistan", code: "TJ" },
+  { name: "Turkmenistan", code: "TM" },
+  { name: "East Timor", code: "TL" },
+  { name: "Turkey", code: "TR" },
+  { name: "Taiwan", code: "TW" },
+  { name: "Uzbekistan", code: "UZ" },
+  { name: "Vietnam", code: "VN" },
+  { name: "West Bank", code: "XX" },
+  { name: "Akrotiri Sovereign Base Area", code: "XX" },
+  { name: "Yemen", code: "YE" },
+  { name: "Albania", code: "AL" },
+  { name: "Aland", code: "AX" },
+  { name: "Andorra", code: "AD" },
+  { name: "Austria", code: "AT" },
+  { name: "BrusselsCapitalRegion", code: "XX" },
+  { name: "FlemishRegion", code: "XX" },
+  { name: "Bulgaria", code: "BG" },
+  { name: "BosniaandHerzegovina", code: "BA" },
+  { name: "RepublicSrpska", code: "XX" },
+  { name: "Belarus", code: "BY" },
+  { name: "WalloonRegion", code: "XX" },
+  { name: "Switzerland", code: "CH" },
+  { name: "CzechRepublic", code: "CZ" },
+  { name: "Germany", code: "DE" },
+  { name: "Denmark", code: "DK" },
+  { name: "England", code: "GB" },
+  { name: "Estonia", code: "EE" },
+  { name: "Finland", code: "FI" },
+  { name: "FaroeIslands", code: "XX" },
+  { name: "France", code: "FR" },
+  { name: "Guernsey", code: "XX" },
+  { name: "Gibraltar", code: "GI" },
+  { name: "Greece", code: "GR" },
+  { name: "Croatia", code: "HR" },
+  { name: "Hungary", code: "HU" },
+  { name: "IsleofMan", code: "XX" },
+  { name: "Ireland", code: "IR" },
+  { name: "Iceland", code: "IS" },
+  { name: "Italy", code: "IT" },
+  { name: "Jersey", code: "XX" },
+  { name: "Kosovo", code: "XX" },
+  { name: "Liechtenstein", code: "LI" },
+  { name: "Lithuania", code: "LT" },
+  { name: "Luxembourg", code: "LU" },
+  { name: "Latvia", code: "LV" },
+  { name: "Monaco", code: "MC" },
+  { name: "Moldova", code: "MD" },
+  { name: "Macedonia", code: "MK" },
+  { name: "Malta", code: "MT" },
+  { name: "Montenegro", code: "ME" },
+  { name: "NorthernIreland", code: "XX" },
+  { name: "JanMayen", code: "XX" },
+  { name: "Netherlands", code: "NL" },
+  { name: "Norway", code: "NO" },
+  { name: "Svalbard", code: "XX" },
+  { name: "Poland", code: "PL" },
+  { name: "Portugal", code: "PT" },
+  { name: "Romania", code: "RO" },
+  { name: "Scotland", code: "XX" },
+  { name: "SanMarino", code: "SM" },
+  { name: "Serbia", code: "RS" },
+  { name: "Vojvodina", code: "XX" },
+  { name: "Slovakia", code: "SK" },
+  { name: "Slovenia", code: "SI" },
+  { name: "Sweden", code: "SE" },
+  { name: "Ukraine", code: "UA" },
+  { name: "Vatican", code: "VA" },
+  { name: "Wales", code: "XX" },
+  { name: "Aruba", code: "XX" },
+  { name: "Antigua", code: "AG" },
+  { name: "Barbuda", code: "XX" },
+  { name: "Anguilla", code: "XX" },
+  { name: "The Bahamas", code: "BS" },
+  { name: "Bajo Nuevo Bank (Petrel Is.)", code: "XX" },
+  { name: "Saint Barthelemy", code: "XX" },
+  { name: "Belize", code: "BZ" },
+  { name: "Bermuda", code: "XX" },
+  { name: "Navassa Island", code: "XX" },
+  { name: "Barbados", code: "BB" },
+  { name: "Canada", code: "CA" },
+  { name: "Costa Rica", code: "CR" },
+  { name: "Cuba", code: "CU" },
+  { name: "Curacao", code: "XX" },
+  { name: "Cayman Islands", code: "XX" },
+  { name: "Dominica", code: "DM" },
+  { name: "Dominican Republic", code: "DO" },
+  { name: "Guadeloupe", code: "GP" },
+  { name: "Grenada", code: "GD" },
+  { name: "Greenland", code: "GL" },
+  { name: "Guatemala", code: "GT" },
+  { name: "Honduras", code: "HN" },
+  { name: "Haiti", code: "HT" },
+  { name: "Jamaica", code: "JM" },
+  { name: "Saint Kitts and Nevis", code: "KN" },
+  { name: "Saint Lucia", code: "LC" },
+  { name: "Saint Martin", code: "XX" },
+  { name: "Mexico", code: "MX" },
+  { name: "Montserrat", code: "XX" },
+  { name: "Martinique", code: "MQ" },
+  { name: "Nicaragua", code: "NI" },
+  { name: "Caribbean Netherlands", code: "XX" },
+  { name: "Panama", code: "PA" },
+  { name: "Puerto Rico", code: "PR" },
+  { name: "Serranilla Bank", code: "XX" },
+  { name: "El Salvador", code: "SV" },
+  { name: "Saint Pierre and Miquelon", code: "XX" },
+  { name: "Sint Maarten", code: "XX" },
+  { name: "Turks and Caicos Islands", code: "XX" },
+  { name: "Trinidad and Tobago", code: "TT" },
+  { name: "United States", code: "US" },
+  { name: "US Naval Base Guantanamo Bay", code: "XX" },
+  { name: "Saint Vincent and the Grenadines", code: "VC" },
+  { name: "British Virgin Islands", code: "VG" },
+  { name: "United States Virgin Islands", code: "VI" },
+  { name: "American Samoa", code: "XX" },
+  { name: "Australia", code: "AU" },
+  { name: "Chile", code: "CL" },
+  { name: "Cook Islands", code: "XX" },
+  { name: "Coral Sea Islands", code: "XX" },
+  { name: "Jarvis Island", code: "XX" },
+  { name: "Fiji", code: "FJ" },
+  { name: "Baker Island", code: "XX" },
+  { name: "Federated States of Micronesia", code: "FM" },
+  { name: "Guam", code: "XX" },
+  { name: "Howland Island", code: "XX" },
+  { name: "Johnston Atoll", code: "XX" },
+  { name: "Kiribati", code: "KI" },
+  { name: "Marshall Islands", code: "MH" },
+  { name: "Northern Mariana Islands", code: "XX" },
+  { name: "Midway Islands", code: "XX" },
+  { name: "New Caledonia", code: "NC" },
+  { name: "Norfolk Island", code: "XX" },
+  { name: "Niue", code: "XX" },
+  { name: "Nauru", code: "NR" },
+  { name: "New Zealand", code: "NZ" },
+  { name: "Pitcairn Islands", code: "XX" },
+  { name: "Palau", code: "PW" },
+  { name: "Bougainville", code: "XX" },
+  { name: "Papua New Guinea", code: "PG" },
+  { name: "French Polynesia", code: "PF" },
+  { name: "Solomon Islands", code: "SB" },
+  { name: "Tokelau", code: "XX" },
+  { name: "Tonga", code: "TO" },
+  { name: "Tuvalu", code: "TV" },
+  { name: "Vanuatu", code: "VU" },
+  { name: "Wallis and Futuna", code: "XX" },
+  { name: "Wake Atoll", code: "XX" },
+  { name: "Samoa", code: "WS" },
+  { name: "Argentina", code: "AR" },
+  { name: "Bolivia", code: "BO" },
+  { name: "Brazil", code: "BR" },
+  { name: "Colombia", code: "CO" },
+  { name: "Ecuador", code: "EC" },
+  { name: "Falkland Islands", code: "XX" },
+  { name: "French Guiana", code: "XX" },
+  { name: "Guyana", code: "GY" },
+  { name: "Peru", code: "PE" },
+  { name: "Paraguay", code: "PY" },
+  { name: "Suriname", code: "SR" },
+  { name: "Uruguay", code: "UY" },
+  { name: "Venezuela", code: "VE" },
+  { name: "Belgium", code: "BE" },
+  { name: "Cote d'Ivoire", code: "CI" },
+  { name: "Djibouti", code: "DJ" },
+  { name: "Northern Mariana Islands", code: "MP" },
+  { name: "Seychelles", code: "SC" },
+  { name: "Sao Tome and Princ.", code: "ST" },
+  { name: "Réunion", code: "RE" },
+  { name: "Palestinian Territories", code: "PS" },
+  { name: "Mauritius", code: "MU" },
+  { name: "Maldives", code: "MV" },
+  { name: "Wales", code: "GB" },
+  { name: "Scotland", code: "GB" },
 ];
 
 const SAM = {
-  username: 'firemansam',
-  password: 'Password!1',
-  email: 'sam@sam.com',
-  isAdmin: true
+  username: "firemansam",
+  password: "Password!1",
+  email: "sam@sam.com",
+  isAdmin: true,
 };
 const NATHAN = {
-  username: 'natedawg',
-  password: 'Password!1',
-  email: 'nathan@nathan.com',
-  isAdmin: true
+  username: "natedawg",
+  password: "Password!1",
+  email: "nathan@nathan.com",
+  isAdmin: true,
 };
 const JET = {
-  username: 'Jet',
-  password: 'Password!1',
-  email: 'jet@jet.com',
-  isAdmin: true
+  username: "Jet",
+  password: "Password!1",
+  email: "jet@jet.com",
+  isAdmin: true,
 };
 const ADMIN_USER = {
-  username: 'admin',
-  password: 'Password!1',
-  email: 'admin@admin.com',
-  isAdmin: true
+  username: "admin",
+  password: "Password!1",
+  email: "admin@admin.com",
+  isAdmin: true,
 };
-
 const NON_ADMIN_USER = {
-  username: 'nonadmin',
-  password: 'Password!1',
-  email: 'nonadmin@nonadmin.com'
+  username: "nonadmin",
+  password: "Password!1",
+  email: "nonadmin@nonadmin.com",
 };
 
 // *** DROP DB ***
 async function db() {
-  console.log('connection to mongo db');
+  console.log("connection to mongo db");
   await connectDb();
-  console.log('successful connection to mongodb');
+  console.log("successful connection to mongodb");
 
-  console.log('deleting countries');
+  console.log("deleting countries");
   await Country.deleteMany({});
-  console.log('successfully deleted countries');
+  console.log("successfully deleted countries");
 
-  console.log('deleting entries');
+  console.log("deleting entries");
   await Entry.deleteMany({});
-  console.log('deleted entries');
+  console.log("deleted entries");
 
-  console.log('deleting users');
+  console.log("deleting users");
   await User.deleteMany();
-  console.log('successfully deleted users');
+  console.log("successfully deleted users");
 
   // *** CREATING USERS ***
-  console.log('creating user');
+  console.log("creating user");
   const [user, adminUser] = await User.create([NON_ADMIN_USER, ADMIN_USER]);
   //TODO: only when schema done
   const [sam, nathan, jet] = await User.create([SAM, NATHAN, JET]);
-  console.log('created users');
+  console.log("created users");
 
-  countries.forEach((country) => {
-    console.log('creating', country);
-    Country.create(country);
-    console.log('done', country);
-  });
+  // countries.forEach((country) => {
+  //   console.log("creating", country);
+  //   Country.create(country);
+  //   console.log("done", country);
+  // });
 
-  console.log('Creating test country one');
+  console.log("creating countries");
+  Country.create(countries);
+  console.log("countries created");
+
+  console.log("Creating test country one");
   const testCountryOne = await Country.create({
-    name: 'TestCountryOne',
-    code: 'TC'
+    name: "TestCountryOne",
+    code: "TC",
   });
-  console.log('Created test country one');
-  console.log('Creating test country two');
+  console.log("Created test country one");
+  console.log("Creating test country two");
   const testCountryTwo = await Country.create({
-    name: 'TestCountryTwo',
-    code: 'TC'
+    name: "TestCountryTwo",
+    code: "TC",
   });
-  console.log('Created test country two');
-  console.log('Creating test country three');
+  console.log("Created test country two");
+  console.log("Creating test country three");
   const testCountryThree = await Country.create({
-    name: 'TestCountryThree',
-    code: 'TC'
+    name: "TestCountryThree",
+    code: "TC",
   });
-  console.log('Created test country three');
-  console.log('Creating test country four');
+  console.log("Created test country three");
+  console.log("Creating test country four");
   const testCountryFour = await Country.create({
-    name: 'TestCountryFour',
-    code: 'TC'
+    name: "TestCountryFour",
+    code: "TC",
   });
-  console.log('Created test country four');
+  console.log("Created test country four");
 
   const testEntries = [
     {
       country: testCountryOne._id,
-      text: 'Bloody great',
-      addedBy: sam._id
+      text: "Bloody great",
+      addedBy: sam._id,
     },
     {
       country: testCountryTwo._id,
-      text: 'Just fab',
-      addedBy: nathan._id
+      text: "Just fab",
+      addedBy: nathan._id,
     },
     {
       country: testCountryThree._id,
-      text: 'A hoot',
-      addedBy: jet._id
+      text: "A hoot",
+      addedBy: jet._id,
     },
     {
       country: testCountryFour._id,
-      text: '10/10 would visit again',
-      addedBy: adminUser._id
-    }
+      text: "10/10 would visit again",
+      addedBy: adminUser._id,
+    },
   ];
-  console.log('Creating test entry one');
+  console.log("Creating test entry one");
   const testEntryOne = await Entry.create(testEntries[0]);
   await Country.findOneAndUpdate(
     { _id: testCountryOne._id },
@@ -398,9 +420,9 @@ async function db() {
     { _id: testEntryOne.addedBy },
     { $push: { entries: testEntryOne._id } }
   );
-  console.log('Successfully created one');
+  console.log("Successfully created one");
 
-  console.log('Creating test entrThreewo');
+  console.log("Creating test entrThreewo");
   const testEntryTwo = await Entry.create(testEntries[1]);
   await Country.findOneAndUpdate(
     { _id: testCountryTwo._id },
@@ -411,9 +433,9 @@ async function db() {
     { _id: testEntryTwo.addedBy },
     { $push: { entries: testEntryTwo._id } }
   );
-  console.log('Successfully created two');
+  console.log("Successfully created two");
 
-  console.log('Creating test entry three');
+  console.log("Creating test entry three");
   const testEntryThree = await Entry.create(testEntries[2]);
   await Country.findOneAndUpdate(
     { _id: testCountryThree._id },
@@ -424,9 +446,9 @@ async function db() {
     { _id: testEntryThree.addedBy },
     { $push: { entries: testEntryThree._id } }
   );
-  console.log('Successfully created three');
+  console.log("Successfully created three");
 
-  console.log('Creating test entry four');
+  console.log("Creating test entry four");
   const testEntryFour = await Entry.create(testEntries[3]);
   await Country.findOneAndUpdate(
     { _id: testCountryFour._id },
@@ -437,10 +459,10 @@ async function db() {
     { _id: testEntryFour.addedBy },
     { $push: { entries: testEntryFour._id } }
   );
-  console.log('Successfully created four');
+  console.log("Successfully created four");
 
   await disconnectDb();
-  console.log('successfully disconnected from mongodb');
+  console.log("successfully disconnected from mongodb");
 }
 
 // creating countries
