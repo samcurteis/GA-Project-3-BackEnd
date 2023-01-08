@@ -63,16 +63,6 @@ async function deleteEntry(req, res, next) {
       return res.status(401).send({ message: 'Unauthorized' });
     }
 
-    await Country.findOneAndUpdate(
-      { _id: entry.country },
-      { $unset: { entries: req.params.id } }
-    );
-
-    await User.findOneAndUpdate(
-      { _id: entry.addedBy },
-      { $unset: { entries: req.params.id } }
-    );
-
     await Entry.findByIdAndDelete(req.params.id);
 
     return res.status(200).json({ message: 'Successfully deleted entry' });
@@ -101,4 +91,10 @@ async function updateEntry(req, res, next) {
   }
 }
 
-export default { getAllEntries, getSingleEntry, createEntry, deleteEntry, updateEntry };
+export default {
+  getAllEntries,
+  getSingleEntry,
+  createEntry,
+  deleteEntry,
+  updateEntry
+};
