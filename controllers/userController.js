@@ -95,11 +95,36 @@ const deleteSingleUser = async (req, res, next) => {
   }
 };
 
+const updateSingleUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    // console.log('req id is ', req.currentUser._id, 'user._id is ', user._id);
+
+    if (!user) {
+      return res.status(404).send({ message: 'No user found' });
+    }
+
+    if (user._id.equals(req.currentUser._id)) {
+      user.set(req.body);
+      const updatedUser = await user.save();
+      return res.status(200).json(updatedUser);
+    }
+
+    return res
+      .status(301)
+      .json({ message: 'Unauthorized from updated single user' });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export default {
   registerUser,
   loginUser,
   getAllUsers,
   getSingleUser,
   searchUser,
-  deleteSingleUser
+  deleteSingleUser,
+  updateSingleUser
 };

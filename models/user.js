@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
       /(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(pw)
   },
   entries: [{ type: mongoose.Types.ObjectId, ref: 'Entry' }],
+  countriesVisited: [{ type: mongoose.Types.ObjectId, ref: 'Country' }],
   cloudinaryImageId: { type: String }
 });
 

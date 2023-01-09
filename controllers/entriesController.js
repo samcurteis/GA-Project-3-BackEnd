@@ -29,19 +29,25 @@ async function createEntry(req, res, next) {
   try {
     const entry = await Entry.create({
       ...req.body,
-      addedBy: req.currentUser._id,
-      username: req.currentUser.username
+      addedBy: req.currentUser._id
     });
 
     await Country.updateOne(
       { _id: entry.country },
       { $push: { entries: entry._id } }
     );
+    const user = await User.findById(entry.addedBy);
 
-    await User.updateOne(
-      { _id: entry.addedBy },
-      { $push: { entries: entry._id } }
+    await user.update({ $push: { entries: entry._id } });
+
+    const alreadyVisited = await User.findOne(
+      { _id: req.currentUser._id },
+      { countriesVisited: entry.country }
     );
+
+    if (alreadyVisited) {
+      await user.update({ $push: { countriesVisited: entry.country } });
+    }
 
     return res.status(201).json(entry);
   } catch (e) {
@@ -62,16 +68,6 @@ async function deleteEntry(req, res, next) {
     ) {
       return res.status(401).send({ message: 'Unauthorized' });
     }
-
-    await Country.findOneAndUpdate(
-      { _id: entry.country },
-      { $unset: { entries: req.params.id } }
-    );
-
-    await User.findOneAndUpdate(
-      { _id: entry.addedBy },
-      { $unset: { entries: req.params.id } }
-    );
 
     await Entry.findByIdAndDelete(req.params.id);
 
@@ -101,4 +97,10 @@ async function updateEntry(req, res, next) {
   }
 }
 
-export default { getAllEntries, getSingleEntry, createEntry, deleteEntry, updateEntry };
+export default {
+  getAllEntries,
+  getSingleEntry,
+  createEntry,
+  deleteEntry,
+  updateEntry
+};
