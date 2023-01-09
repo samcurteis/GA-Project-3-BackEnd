@@ -29,19 +29,25 @@ async function createEntry(req, res, next) {
   try {
     const entry = await Entry.create({
       ...req.body,
-      addedBy: req.currentUser._id,
-      username: req.currentUser.username
+      addedBy: req.currentUser._id
     });
 
     await Country.updateOne(
       { _id: entry.country },
       { $push: { entries: entry._id } }
     );
+    const user = await User.findById(entry.addedBy);
 
-    await User.updateOne(
-      { _id: entry.addedBy },
-      { $push: { entries: entry._id } }
+    await user.update({ $push: { entries: entry._id } });
+
+    const alreadyVisited = await User.findOne(
+      { _id: req.currentUser._id },
+      { countriesVisited: entry.country }
     );
+
+    if (alreadyVisited) {
+      await user.update({ $push: { countriesVisited: entry.country } });
+    }
 
     return res.status(201).json(entry);
   } catch (e) {
