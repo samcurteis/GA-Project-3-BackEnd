@@ -4,6 +4,7 @@ import Country from "../models/country.js";
 import Entry from "../models/entry.js";
 
 const countries = [
+  { name: "Antarctica", code: "XX" },
   { name: "Angola", code: "AO" },
   { name: "Burundi", code: "BI" },
   { name: "Benin", code: "BJ" },
