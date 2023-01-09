@@ -27,7 +27,9 @@ Router.route('/login').post(userController.loginUser);
 
 Router.route('/users').post(secureRoute, userController.getAllUsers);
 Router.route('/users/search').post(secureRoute, userController.searchUser);
-Router.route('/users/:id').post(secureRoute, userController.getSingleUser);
+Router.route('/users/:id')
+  .post(secureRoute, userController.getSingleUser)
+  .put(secureRoute, userController.updateSingleUser);
 
 Router.route('/login').post(userController.loginUser);
 
